@@ -1,67 +1,58 @@
-import React, { useEffect, useState } from "react";
-import Text from "components/Text";
+import React, { useState } from "react";
 import Spinner from "components/Spinner";
-import CheckBox from "components/CheckBox";
-import IconButton from "@material-ui/core/IconButton";
-import FavoriteIcon from "@material-ui/icons/Favorite";
+import CountriesCheckBoxes from "../CheckBox/CountriesCheckBoxes";
+import UserItem from "./UserItem";
 import * as S from "./style";
 
 const UserList = ({ users, isLoading }) => {
-  const [hoveredUserId, setHoveredUserId] = useState();
+    // this state will hold a list of the filtered users
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    // this state will hold a flag indicating the country filter status - true/false
+    const [countryFilterIsActive, setCountryFilterIsActive] = useState(false);
 
-  const handleMouseEnter = (index) => {
-    setHoveredUserId(index);
-  };
+    // Filter users by country - update the filteredUsers state and the countryFilterIsActive state
+    const filterByCountry = (checkedCountries) => {
+        isLoading = true;
 
-  const handleMouseLeave = () => {
-    setHoveredUserId();
-  };
+        if (checkedCountries.length === 0) {
+            setFilteredUsers([]);
+            setCountryFilterIsActive(false);
+        } else {
+            setFilteredUsers(
+                users.filter((user) => checkedCountries.includes(user.location.country))
+            );
+            setCountryFilterIsActive(true);
+        }
 
-  return (
-    <S.UserList>
-      <S.Filters>
-        <CheckBox value="BR" label="Brazil" />
-        <CheckBox value="AU" label="Australia" />
-        <CheckBox value="CA" label="Canada" />
-        <CheckBox value="DE" label="Germany" />
-      </S.Filters>
-      <S.List>
-        {users.map((user, index) => {
-          return (
-            <S.User
-              key={index}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-            >
-              <S.UserPicture src={user?.picture.large} alt="" />
-              <S.UserInfo>
-                <Text size="22px" bold>
-                  {user?.name.title} {user?.name.first} {user?.name.last}
-                </Text>
-                <Text size="14px">{user?.email}</Text>
-                <Text size="14px">
-                  {user?.location.street.number} {user?.location.street.name}
-                </Text>
-                <Text size="14px">
-                  {user?.location.city} {user?.location.country}
-                </Text>
-              </S.UserInfo>
-              <S.IconButtonWrapper isVisible={index === hoveredUserId}>
-                <IconButton>
-                  <FavoriteIcon color="error" />
-                </IconButton>
-              </S.IconButtonWrapper>
-            </S.User>
-          );
-        })}
-        {isLoading && (
-          <S.SpinnerWrapper>
-            <Spinner color="primary" size="45px" thickness={6} variant="indeterminate" />
-          </S.SpinnerWrapper>
-        )}
-      </S.List>
-    </S.UserList>
-  );
+        isLoading = false;
+    };
+
+    return (
+        <S.UserList>
+            <CountriesCheckBoxes filterByCountry={filterByCountry} />
+
+            <S.List>
+                {countryFilterIsActive
+                    ? filteredUsers.map((user, index) => (
+                          <UserItem key={index} index={index} user={user} />
+                      ))
+                    : users.map((user, index) => (
+                          <UserItem key={index} index={index} user={user} />
+                      ))}
+
+                {isLoading && (
+                    <S.SpinnerWrapper>
+                        <Spinner
+                            color="primary"
+                            size="45px"
+                            thickness={6}
+                            variant="indeterminate"
+                        />
+                    </S.SpinnerWrapper>
+                )}
+            </S.List>
+        </S.UserList>
+    );
 };
 
 export default UserList;
