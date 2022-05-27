@@ -4,7 +4,7 @@ import CountriesCheckBoxes from "../CheckBox/CountriesCheckBoxes";
 import UserItem from "./UserItem";
 import * as S from "./style";
 
-const UserList = ({ users, isLoading }) => {
+const UserList = ({ users, isLoading, favorites, toggleFavorite }) => {
     // this state will hold a list of the filtered users
     const [filteredUsers, setFilteredUsers] = useState([]);
     // this state will hold a flag indicating the country filter status - true/false
@@ -12,8 +12,6 @@ const UserList = ({ users, isLoading }) => {
 
     // Filter users by country - update the filteredUsers state and the countryFilterIsActive state
     const filterByCountry = (checkedCountries) => {
-        isLoading = true;
-
         if (checkedCountries.length === 0) {
             setFilteredUsers([]);
             setCountryFilterIsActive(false);
@@ -23,9 +21,25 @@ const UserList = ({ users, isLoading }) => {
             );
             setCountryFilterIsActive(true);
         }
-
-        isLoading = false;
     };
+
+    // Create a new User Item with the index and user data we got as params
+    const createUserItem = (index, user) => (
+        <UserItem
+            key={index}
+            index={index}
+            user={user}
+            // isFavorite={favorites.includes(user?.login.uuid)}
+            isFavorite={
+                favorites.findIndex(
+                    (userIter) => user.login.uuid === userIter.login.uuid
+                ) === -1
+                    ? false
+                    : true
+            }
+            toggleFavorite={toggleFavorite}
+        />
+    );
 
     return (
         <S.UserList>
@@ -33,12 +47,8 @@ const UserList = ({ users, isLoading }) => {
 
             <S.List>
                 {countryFilterIsActive
-                    ? filteredUsers.map((user, index) => (
-                          <UserItem key={index} index={index} user={user} />
-                      ))
-                    : users.map((user, index) => (
-                          <UserItem key={index} index={index} user={user} />
-                      ))}
+                    ? filteredUsers.map((user, index) => createUserItem(index, user))
+                    : users.map((user, index) => createUserItem(index, user))}
 
                 {isLoading && (
                     <S.SpinnerWrapper>

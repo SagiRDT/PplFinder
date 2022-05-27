@@ -4,7 +4,7 @@ import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 
-const UserItem = ({ index, user }) => {
+const UserItem = ({ index, user, isFavorite, toggleFavorite }) => {
     const [hoveredUserId, setHoveredUserId] = useState();
 
     const handleMouseEnter = (index) => {
@@ -34,7 +34,12 @@ const UserItem = ({ index, user }) => {
                     {user?.location.city} {user?.location.country}
                 </Text>
             </S.UserInfo>
-            <S.IconButtonWrapper isVisible={index === hoveredUserId}>
+            <S.IconButtonWrapper
+                isVisible={index === hoveredUserId || isFavorite}
+                onClick={() => {
+                    toggleFavorite(user);
+                }}
+            >
                 <IconButton>
                     <FavoriteIcon color="error" />
                 </IconButton>
