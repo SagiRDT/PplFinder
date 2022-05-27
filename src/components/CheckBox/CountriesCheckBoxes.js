@@ -16,13 +16,13 @@ const CountryCheckBoxes = ({ filterByCountry }) => {
     const [checkedCountries, setCheckedCountries] = useState([]);
 
     // Toggle the selected party from the checkedCountries list state (using country name)
-    const handleChange = (country_name) => {
-        const countryIndex = checkedCountries.indexOf(country_name);
+    const handleChange = (countryName) => {
+        const countryIndex = checkedCountries.indexOf(countryName);
         const newCheckedCountries = [...checkedCountries];
 
         // if the country is not in the checked list - enter it
         if (countryIndex === -1) {
-            newCheckedCountries.push(country_name);
+            newCheckedCountries.push(countryName);
         }
         // else - remove it from the checked list (it was un-checked)
         else {
