@@ -9,7 +9,7 @@ export const usePeopleFetch = () => {
         setIsLoading(true);
 
         const response = await axios.get(
-            `https://randomuser.me/api/?results=6&page=${pageNumber}`
+            `https://randomuser.me/api/?results=25&page=${pageNumber}`
         );
 
         setIsLoading(false);
