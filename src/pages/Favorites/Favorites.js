@@ -39,6 +39,7 @@ const Favorites = () => {
                     users={favorites}
                     isLoading={false}
                     favorites={favorites}
+                    isFavoritePage={true}
                     toggleFavorite={removeFromFavorites}
                     setPageNumber={() => null}
                 />

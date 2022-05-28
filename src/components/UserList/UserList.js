@@ -4,7 +4,14 @@ import CountriesCheckBoxes from "../CheckBox/CountriesCheckBoxes";
 import UserItem from "./UserItem";
 import * as S from "./style";
 
-const UserList = ({ users, isLoading, favorites, toggleFavorite, setPageNumber }) => {
+const UserList = ({
+    users,
+    isLoading,
+    favorites,
+    isFavoritePage = false,
+    toggleFavorite,
+    setPageNumber,
+}) => {
     // this state will hold a list of the filtered users
     const [filteredUsers, setFilteredUsers] = useState([]);
     // this state will hold a flag indicating the country filter status - true/false
@@ -23,6 +30,24 @@ const UserList = ({ users, isLoading, favorites, toggleFavorite, setPageNumber }
         }
     };
 
+    // handle the favorites page removal of a favorite user, making sure the user will be removed from the favorites
+    // page also if the users are filtered (deleting it from the filtered users list as well)
+    const favoritePageRemoveFromFavorites = (userData) => {
+        // if the user is in the filtered users list remove him from it
+        const userIndex = filteredUsers.findIndex(
+            (user) => user.login.uuid === userData.login.uuid
+        );
+
+        if (userIndex !== -1) {
+            const newFilteredUsers = [...filteredUsers];
+            newFilteredUsers.splice(userIndex, 1);
+            setFilteredUsers(newFilteredUsers);
+        }
+
+        // call the toggle function we got as param
+        toggleFavorite(userData);
+    };
+
     // Create a new User Item with the index and user data we got as params
     const createUserItem = (index, user, isLast = false) => (
         <UserItem
@@ -38,7 +63,9 @@ const UserList = ({ users, isLoading, favorites, toggleFavorite, setPageNumber }
                     ? false
                     : true
             }
-            toggleFavorite={toggleFavorite}
+            toggleFavorite={
+                isFavoritePage ? favoritePageRemoveFromFavorites : toggleFavorite
+            }
             setPageNumber={setPageNumber}
         />
     );
