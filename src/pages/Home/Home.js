@@ -10,10 +10,13 @@ import { usePeopleFetch } from "hooks";
 import * as S from "./style";
 
 const Home = () => {
-    const { users, isLoading } = usePeopleFetch();
-
     // this state will hold the favorites of the user - will be loaded and saved in localStorage
     const [favorites, setFavorites] = useState([]);
+
+    // this state will hold the current page number that we recently loaded
+    const [pageNumber, setPageNumber] = useState(1);
+
+    const { users, isLoading, fetchUsers } = usePeopleFetch();
 
     // init the favorite data from local storage
     const initFavorites = () => {
@@ -26,6 +29,12 @@ const Home = () => {
         initFavorites();
         // eslint-disable-next-line
     }, []);
+
+    // if the pageNumber state got changed fetch new users
+    useEffect(() => {
+        fetchUsers(pageNumber);
+        // eslint-disable-next-line
+    }, [pageNumber]);
 
     // Toggle a favorite user, update the favorite state and the localStorage
     const toggleFavorite = (userData) => {
@@ -62,6 +71,7 @@ const Home = () => {
                     isLoading={isLoading}
                     favorites={favorites}
                     toggleFavorite={toggleFavorite}
+                    setPageNumber={setPageNumber}
                 />
             </S.Content>
         </S.Home>

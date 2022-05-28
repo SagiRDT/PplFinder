@@ -4,7 +4,7 @@ import CountriesCheckBoxes from "../CheckBox/CountriesCheckBoxes";
 import UserItem from "./UserItem";
 import * as S from "./style";
 
-const UserList = ({ users, isLoading, favorites, toggleFavorite }) => {
+const UserList = ({ users, isLoading, favorites, toggleFavorite, setPageNumber }) => {
     // this state will hold a list of the filtered users
     const [filteredUsers, setFilteredUsers] = useState([]);
     // this state will hold a flag indicating the country filter status - true/false
@@ -24,12 +24,13 @@ const UserList = ({ users, isLoading, favorites, toggleFavorite }) => {
     };
 
     // Create a new User Item with the index and user data we got as params
-    const createUserItem = (index, user) => (
+    const createUserItem = (index, user, isLast = false) => (
         <UserItem
             key={index}
             index={index}
             user={user}
-            // isFavorite={favorites.includes(user?.login.uuid)}
+            isLast={isLast}
+            isLoading={isLoading}
             isFavorite={
                 favorites.findIndex(
                     (userIter) => user.login.uuid === userIter.login.uuid
@@ -38,6 +39,7 @@ const UserList = ({ users, isLoading, favorites, toggleFavorite }) => {
                     : true
             }
             toggleFavorite={toggleFavorite}
+            setPageNumber={setPageNumber}
         />
     );
 
@@ -48,7 +50,11 @@ const UserList = ({ users, isLoading, favorites, toggleFavorite }) => {
             <S.List>
                 {countryFilterIsActive
                     ? filteredUsers.map((user, index) => createUserItem(index, user))
-                    : users.map((user, index) => createUserItem(index, user))}
+                    : users.map((user, index) =>
+                          index + 1 === users.length
+                              ? createUserItem(index, user, true)
+                              : createUserItem(index, user)
+                      )}
 
                 {isLoading && (
                     <S.SpinnerWrapper>

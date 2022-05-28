@@ -22,7 +22,7 @@ const Favorites = () => {
         // eslint-disable-next-line
     }, []);
 
-    const removeFromFavorite = (userData) => {
+    const removeFromFavorites = (userData) => {
         const newFavoritesData = RemoveUserDataFromFavorites(userData);
         setFavorites(newFavoritesData);
     };
@@ -39,7 +39,8 @@ const Favorites = () => {
                     users={favorites}
                     isLoading={false}
                     favorites={favorites}
-                    toggleFavorite={removeFromFavorite}
+                    toggleFavorite={removeFromFavorites}
+                    setPageNumber={() => null}
                 />
             </S.Content>
         </S.Home>

@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import Text from "components/Text";
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 
-const UserItem = ({ index, user, isFavorite, toggleFavorite }) => {
+const UserItem = ({
+    index,
+    user,
+    isLast,
+    isLoading,
+    isFavorite,
+    toggleFavorite,
+    setPageNumber,
+}) => {
     const [hoveredUserId, setHoveredUserId] = useState();
 
     const handleMouseEnter = (index) => {
@@ -15,9 +23,30 @@ const UserItem = ({ index, user, isFavorite, toggleFavorite }) => {
         setHoveredUserId();
     };
 
+    // this ref and callback will observe the last userItem, when the last userItem will be rendered to the screen
+    // the callback function will be called and will fetch a new page with new users
+    const observer = useRef();
+    const lastUserItemRef = useCallback(
+        (userItem) => {
+            if (isLoading) return;
+
+            if (observer.current) observer.current.disconnect();
+
+            observer.current = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    setPageNumber((prevPageNumber) => prevPageNumber + 1);
+                }
+            });
+
+            if (userItem) observer.current.observe(userItem);
+        },
+        [isLoading]
+    );
+
     return (
         <S.User
             key={index}
+            ref={isLast ? lastUserItemRef : null}
             onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={handleMouseLeave}
         >
